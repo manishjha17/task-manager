@@ -64,7 +64,93 @@ const createTask = async (req, res) => {
   }
 };
 
+const updateTask = async (req, res) => {
+  try{
+    const { id } = req.params;
+    const { title, description, dueDate, completed, priority } = req.body;
+    let task = await Task.findById(id);
+    if(!task){
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found'
+      });
+    }
+    if(title !== undefined) task.title = title;
+    if(description !== undefined) task.description = description;
+    if(dueDate !== undefined) task.dueDate = dueDate;
+    if(completed !== undefined) task.completed = completed;
+    if(priority !== undefined) task.priority = priority;
+    await task.save();
+    res.status(200).json({
+      success: true,
+      data: task
+    });
+  }catch(error){
+    res.status(500).json({
+      success: false,
+      message: 'Server Error: unable to update task',
+      error: error.message
+    });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try{
+    const { id } = req.params;
+    const task = await Task.findById(id);
+    if(!task){
+      return res.status(404).json({
+        success: false,
+        message: 'Task not found'
+      });
+    }
+    await task.deleteOne();
+    res.status(200).json({
+      success: true,
+      message: 'Task deleted successfully'
+    });
+  }catch(error){
+    res.status(500).json({
+      success: false,
+      message: 'Server Error: unable to delete task',
+      error: error.message
+    });
+  }
+};
+
+const reorderTasks = async (req, res) => {
+  try{
+    const { taskIds } = req.body;
+    if(!taskIds || !Array.isArray(taskIds)){
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid task ID list'
+      });
+    }
+    const bulkOps = taskIds.map((id, index) => ({
+      updateOne: {
+        filter: { _id: id },
+        update: { $set: { order: index } }
+      }
+    }));
+    await Task.bulkWrite(bulkOps);
+    res.status(200).json({
+      success: true,
+      message: 'Tasks reordered successfully'
+    });
+  }catch(error){
+    res.status(500).json({
+      success: false,
+      message: 'Server Error: unable to reorder tasks',
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   getTasks,
-  createTask
+  createTask,
+  updateTask,
+  deleteTask,
+  reorderTasks
 };
