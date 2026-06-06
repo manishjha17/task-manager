@@ -23,7 +23,7 @@ export default function TaskItem({
 
   const priorityStyles = {
     low: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-    medium: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+    medium: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',
     high: 'bg-red-500/10 text-red-400 border-red-500/20'
   };
 
@@ -60,7 +60,7 @@ export default function TaskItem({
               ? "bg-emerald-500 border-emerald-500 text-white"
               : isOverdue
                 ? "border-red-500/50 hover:border-red-400"
-                : "border-slate-500 hover:border-blue-400"
+                : "border-slate-500 hover:border-yellow-400"
           )}
         >
           {task.completed && (
@@ -119,11 +119,11 @@ export default function TaskItem({
         <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(task)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-400 hover:bg-slate-800/40 transition-all cursor-pointer"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-yellow-400 hover:bg-slate-800/40 transition-all cursor-pointer"
             title="Edit Task"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-2.036a5 5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
           </button>
 

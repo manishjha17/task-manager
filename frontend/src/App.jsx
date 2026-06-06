@@ -222,7 +222,7 @@ export default function App() {
               onClick={() => setStatusFilter(f)}
               className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
                 statusFilter === f
-                  ? 'bg-blue-500/20 text-blue-300 border-blue-500/40 shadow-md'
+                  ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 shadow-md shadow-yellow-500/5'
                   : 'border-white/5 bg-slate-900/25 text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
               }`}
             >
@@ -237,7 +237,7 @@ export default function App() {
             setEditingTask(null);
             setIsFormOpen(!isFormOpen);
           }}
-          className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+          className="px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-black shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/25 transition-all flex items-center justify-center gap-1.5 cursor-pointer font-bold"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
@@ -264,7 +264,7 @@ export default function App() {
       <main className="flex-1 flex flex-col gap-4">
         {loading && tasks.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+            <div className="w-12 h-12 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
             <p className="text-slate-400 text-sm font-semibold tracking-wide">Loading tasks from database...</p>
           </div>
         ) : tasks.length === 0 ? (

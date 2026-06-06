@@ -8,16 +8,16 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
   const [validationError, setValidationError] = useState('');
 
   useEffect(() => {
-    if(initialTask){
+    if (initialTask) {
       setTitle(initialTask.title || '');
       setDescription(initialTask.description || '');
       setPriority(initialTask.priority || 'medium');
-      if(initialTask.dueDate){
+      if (initialTask.dueDate) {
         setDueDate(new Date(initialTask.dueDate).toISOString().split('T')[0]);
-      }else{
+      } else {
         setDueDate('');
       }
-    }else{
+    } else {
       setTitle('');
       setDescription('');
       setPriority('medium');
@@ -28,7 +28,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(!title.trim()){
+    if (!title.trim()) {
       setValidationError('Title is required');
       return;
     }
@@ -54,7 +54,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
           value={title}
           onChange={(e) => {
             setTitle(e.target.value);
-            if(e.target.value.trim()) setValidationError('');
+            if (e.target.value.trim()) setValidationError('');
           }}
           placeholder="What needs to be done?"
           maxLength={100}
@@ -96,21 +96,20 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
             {['low', 'medium', 'high'].map((p) => {
               const isActive = priority === p;
               let activeColorClass = '';
-              if(isActive){
-                if(p === 'low') activeColorClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
-                if(p === 'medium') activeColorClass = 'bg-blue-500/20 text-blue-300 border-blue-500/40';
-                if(p === 'high') activeColorClass = 'bg-red-500/20 text-red-300 border-red-500/40';
+              if (isActive) {
+                if (p === 'low') activeColorClass = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+                if (p === 'medium') activeColorClass = 'bg-yellow-500/20 text-yellow-300 border-yellow-500/40';
+                if (p === 'high') activeColorClass = 'bg-red-500/20 text-red-300 border-red-500/40';
               }
               return (
                 <button
                   key={p}
                   type="button"
                   onClick={() => setPriority(p)}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
-                    isActive
+                  className={`flex-1 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${isActive
                       ? `${activeColorClass} shadow-md`
                       : 'border-white/5 bg-slate-900/25 text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
-                  }`}
+                    }`}
                 >
                   {p}
                 </button>
@@ -131,7 +130,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
         </button>
         <button
           type="submit"
-          className="px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white shadow-lg shadow-blue-500/10 hover:shadow-blue-500/25 transition-all"
+          className="px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-black shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/25 transition-all font-bold"
         >
           {initialTask ? 'Save Changes' : 'Create Task'}
         </button>
