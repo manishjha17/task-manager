@@ -136,7 +136,7 @@ export default function TaskItem({
           </span>
         )}
 
-        <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             onClick={() => onEdit(task)}
             className="p-1.5 rounded-lg text-slate-400 hover:text-yellow-400 hover:bg-slate-800/40 transition-all cursor-pointer"
