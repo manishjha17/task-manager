@@ -6,7 +6,10 @@ import ConfirmModal from './components/ConfirmModal';
 import EmptyState from './components/EmptyState';
 import './App.css';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/tasks';
+// VITE_API_URL should be the backend root URL only, e.g. https://my-api.render.com
+// /api/tasks is always appended in code so the path is never accidentally omitted.
+const API_ROOT = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
+const API_BASE = `${API_ROOT}/api/tasks`;
 
 export default function App() {
   const [tasks, setTasks] = useState([]);
@@ -21,21 +24,21 @@ export default function App() {
 
   // Fetch tasks
   const fetchTasks = async () => {
-    try{
+    try {
       setLoading(true);
       setError(null);
       const url = new URL(API_BASE);
-      if(statusFilter !== 'all') url.searchParams.append('status', statusFilter);
-      if(searchQuery.trim()) url.searchParams.append('search', searchQuery.trim());
+      if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
+      if (searchQuery.trim()) url.searchParams.append('search', searchQuery.trim());
       const response = await fetch(url);
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to fetch tasks');
       }
       setTasks(resData.data || []);
-    }catch(err){
+    } catch (err) {
       setError(err.message || 'Unable to connect to the server');
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -50,7 +53,7 @@ export default function App() {
 
   // Create task
   const handleCreateTask = async (taskData) => {
-    try{
+    try {
       setError(null);
       const response = await fetch(API_BASE, {
         method: 'POST',
@@ -58,19 +61,19 @@ export default function App() {
         body: JSON.stringify(taskData)
       });
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to create task');
       }
       setTasks(prev => [resData.data, ...prev]);
       setIsFormOpen(false);
-    }catch(err){
+    } catch (err) {
       setError(err.message);
     }
   };
 
   // Update task details
   const handleUpdateTask = async (id, taskData) => {
-    try{
+    try {
       setError(null);
       const response = await fetch(`${API_BASE}/${id}`, {
         method: 'PUT',
@@ -78,48 +81,48 @@ export default function App() {
         body: JSON.stringify(taskData)
       });
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to update task');
       }
       setTasks(prev => prev.map(t => t._id === id ? resData.data : t));
       setEditingTask(null);
       setIsFormOpen(false);
-    }catch(err){
+    } catch (err) {
       setError(err.message);
     }
   };
 
   // Toggle completion status
   const handleToggleComplete = async (id, completed) => {
-    try{
+    try {
       const response = await fetch(`${API_BASE}/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !completed })
       });
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to toggle status');
       }
       setTasks(prev => prev.map(t => t._id === id ? resData.data : t));
-    }catch(err){
+    } catch (err) {
       setError(err.message);
     }
   };
 
   // Delete task
   const handleDeleteTask = async () => {
-    if(!taskToDelete) return;
-    try{
+    if (!taskToDelete) return;
+    try {
       setError(null);
       const response = await fetch(`${API_BASE}/${taskToDelete._id}`, { method: 'DELETE' });
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to delete task');
       }
       setTasks(prev => prev.filter(t => t._id !== taskToDelete._id));
       setTaskToDelete(null);
-    }catch(err){
+    } catch (err) {
       setError(err.message);
     }
   };
@@ -128,7 +131,7 @@ export default function App() {
   const handleReorderTasks = async (newOrderedTasks) => {
     const originalTasks = [...tasks];
     setTasks(newOrderedTasks);
-    try{
+    try {
       const taskIds = newOrderedTasks.map(t => t._id);
       const response = await fetch(`${API_BASE}/reorder`, {
         method: 'PUT',
@@ -136,10 +139,10 @@ export default function App() {
         body: JSON.stringify({ taskIds })
       });
       const resData = await response.json();
-      if(!response.ok){
+      if (!response.ok) {
         throw new Error(resData.message || 'Failed to save reorder');
       }
-    }catch(err){
+    } catch (err) {
       setError(err.message);
       setTasks(originalTasks);
     }
@@ -154,7 +157,7 @@ export default function App() {
 
   const handleDragOver = (e, index) => {
     e.preventDefault();
-    if(draggedIndex === null || draggedIndex === index) return;
+    if (draggedIndex === null || draggedIndex === index) return;
     const tempTasks = [...tasks];
     const draggedItem = tempTasks[draggedIndex];
     tempTasks.splice(draggedIndex, 1);
@@ -164,7 +167,7 @@ export default function App() {
   };
 
   const handleDragEnd = () => {
-    if(draggedIndex === null) return;
+    if (draggedIndex === null) return;
     handleReorderTasks(tasks);
     setDraggedIndex(null);
   };
@@ -220,11 +223,10 @@ export default function App() {
             <button
               key={f}
               onClick={() => setStatusFilter(f)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${
-                statusFilter === f
+              className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${statusFilter === f
                   ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 shadow-md shadow-yellow-500/5'
                   : 'border-white/5 bg-slate-900/25 text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
-              }`}
+                }`}
             >
               {f}
             </button>

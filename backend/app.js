@@ -27,7 +27,7 @@ app.get('/health', (req, res) => {
 
 //Root Route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Task Manager API');
+  res.status(200).json({ success: true, message: 'Welcome to the Task Manager API' });
 });
 
 module.exports = app;
