@@ -7,6 +7,19 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
   const [priority, setPriority] = useState('medium');
   const [validationError, setValidationError] = useState('');
 
+  const getTodayString = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const todayStr = getTodayString();
+  const minDate = initialTask && initialTask.dueDate && new Date(initialTask.dueDate).setHours(0,0,0,0) < new Date().setHours(0,0,0,0)
+    ? new Date(initialTask.dueDate).toISOString().split('T')[0]
+    : todayStr;
+
   useEffect(() => {
     if (initialTask) {
       setTitle(initialTask.title || '');
@@ -84,6 +97,7 @@ export default function TaskForm({ onSubmit, onCancel, initialTask }) {
           <input
             type="date"
             value={dueDate}
+            min={minDate}
             onChange={(e) => setDueDate(e.target.value)}
             className="glass-input px-4 py-2.5 rounded-xl text-sm w-full"
           />
