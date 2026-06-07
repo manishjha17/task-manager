@@ -21,11 +21,19 @@ export default function App() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
+  const [showWakeMessage, setShowWakeMessage] = useState(false);
 
   // Fetch tasks
-  const fetchTasks = async () => {
+  const fetchTasks = async (isSilent = false) => {
+    let wakeTimer;
     try {
-      setLoading(true);
+      if (!isSilent) {
+        setLoading(true);
+        setShowWakeMessage(false);
+        wakeTimer = setTimeout(() => {
+          setShowWakeMessage(true);
+        }, 3000);
+      }
       setError(null);
       const url = new URL(API_BASE);
       if (statusFilter !== 'all') url.searchParams.append('status', statusFilter);
@@ -39,16 +47,28 @@ export default function App() {
     } catch (err) {
       setError(err.message || 'Unable to connect to the server');
     } finally {
-      setLoading(false);
+      if (wakeTimer) clearTimeout(wakeTimer);
+      if (!isSilent) {
+        setLoading(false);
+        setShowWakeMessage(false);
+      }
     }
   };
 
   // Debounced fetch on filter/search change
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      fetchTasks();
+      fetchTasks(false);
     }, 300);
     return () => clearTimeout(delayDebounceFn);
+  }, [statusFilter, searchQuery]);
+
+  // Poll for background updates every 10 seconds to sync changes from other devices
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchTasks(true);
+    }, 10000);
+    return () => clearInterval(interval);
   }, [statusFilter, searchQuery]);
 
   // Create task
@@ -224,8 +244,8 @@ export default function App() {
               key={f}
               onClick={() => setStatusFilter(f)}
               className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all cursor-pointer ${statusFilter === f
-                  ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 shadow-md shadow-yellow-500/5'
-                  : 'border-white/5 bg-slate-900/25 text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
+                ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30 shadow-md shadow-yellow-500/5'
+                : 'border-white/5 bg-slate-900/25 text-slate-400 hover:bg-slate-900/50 hover:text-slate-200'
                 }`}
             >
               {f}
@@ -265,9 +285,18 @@ export default function App() {
       {/* Task List container */}
       <main className="flex-1 flex flex-col gap-4">
         {loading && tasks.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="flex flex-col items-center justify-center py-20 gap-4 text-center max-w-md mx-auto">
             <div className="w-12 h-12 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin"></div>
-            <p className="text-slate-400 text-sm font-semibold tracking-wide">Loading tasks from database...</p>
+            {showWakeMessage ? (
+              <div className="flex flex-col gap-2 px-4 animate-fadeIn">
+                <p className="text-slate-200 text-sm font-semibold tracking-wide">Loading tasks...</p>
+                <p className="text-yellow-500/80 text-xs leading-relaxed max-w-xs mx-auto animate-pulse font-medium">
+                  Note: Render free tier services automatically spin down after 15 minutes of inactivity. Waking up the server can take up to 50 seconds.
+                </p>
+              </div>
+            ) : (
+              <p className="text-slate-400 text-sm font-semibold tracking-wide">Loading tasks from database...</p>
+            )}
           </div>
         ) : tasks.length === 0 ? (
           <EmptyState
